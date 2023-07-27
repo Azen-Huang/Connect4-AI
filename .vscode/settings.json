@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "vector": "cpp",
+        "algorithm": "cpp",
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "istream": "cpp",
+        "iosfwd": "cpp",
+        "__bit_reference": "cpp",
+        "__string": "cpp",
+        "ios": "cpp",
+        "type_traits": "cpp",
+        "__node_handle": "cpp",
+        "utility": "cpp"
+    }
+}
