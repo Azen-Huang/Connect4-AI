@@ -37,7 +37,7 @@ void Game::undo(int action) {
     return;
 }
 
-const int Game::score() { // draw(0) win(10) others(-1)
+const int Game::score() { // draw(0) win(10) not end(-1)
     // 檢查水平方向是否有四個連續的棋子
     int current_turn = turn == 1 ? 2 : 1;
     for (int row = 0; row < HEIGHT; ++row) {
