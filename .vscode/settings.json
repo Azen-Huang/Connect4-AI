@@ -11,6 +11,8 @@
         "ios": "cpp",
         "type_traits": "cpp",
         "__node_handle": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "new": "cpp",
+        "chrono": "cpp"
     }
 }

@@ -10,7 +10,8 @@ public:
     int getNxtAction();
 private:
     void search(Node* root);
-    Node* select(Node* node, int& action);
+    // Node* select(Node* node, int& action);
+    pair<Node*, int> select(Node* node);
     void expand(Node* node, Game* _board);
     double playout(Game* _board);
     void backpropagate(vector<Node*> path, double value);

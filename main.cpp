@@ -3,8 +3,8 @@
 #include "node.h"
 #include "mcts.h"
 using namespace std;
-const int EVALUATION_COUNT = 1000;
-const int PLAYOUT_COUNT = 100;
+const int EVALUATION_COUNT = 5000;
+const int PLAYOUT_COUNT = 10;
 int input(char c) {
     return toupper(c) - 'A';
 }
@@ -94,7 +94,7 @@ void Human_vs_Human() {
 }
 
 int main() {
-    //Human_vs_Human();
+    // Human_vs_Human();
     // Human_vs_AI();
     AI_vs_AI();
 

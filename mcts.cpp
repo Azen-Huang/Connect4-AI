@@ -1,4 +1,8 @@
 #include "mcts.h"
+#include <chrono>
+#define TIME 
+
+
 
 MCTS::MCTS(Game* _board, int _simulationCount, int _playoutCount) {
     board = _board;
@@ -6,26 +10,46 @@ MCTS::MCTS(Game* _board, int _simulationCount, int _playoutCount) {
     playoutCount = _playoutCount;
 }
 
+void showProgressBar(int progress, int total, int barWidth = 70) {
+    float progressRatio = static_cast<float>(progress) / total;
+    int barLength = static_cast<int>(barWidth * progressRatio);
+
+    std::cout << "\r MCTS: [";
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < barLength) std::cout << '=';
+        else std::cout << ' ';
+    }
+    std::cout << "] " << static_cast<int>(progressRatio * 100.0) << "%";
+    std::cout.flush();
+}
+
 int MCTS::getNxtAction() {
     Node* root = new Node();
     expand(root, board);
-
+    auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < simulationCount; ++i) {
-        if (i % int(simulationCount / 10) == 0) {
-            cout << "Simulation: " << i << " / " << simulationCount << endl;
-        }
         search(root);
+        #ifdef TIME 
+        if ((i + 1) % int(simulationCount / 100) == 0 || i == simulationCount - 1) {
+            showProgressBar(i + 1, simulationCount);
+            // 計算執行時間並顯示在進度條的右邊
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            double duration = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
+            std::cout << "  time:" << duration << " s";
+            std::cout.flush();
+        }
+        #endif
     }
-
+    cout << endl;
     int nxtAction = -1;
-    int MaxN = -1;
-    for (auto child : root->children) {
-        if (child->n > MaxN) {
-            MaxN = child->n;
+    int maxN = -1;
+    for (auto& child : root->children) {
+        if (child->n > maxN) {
+            maxN = child->n;
             nxtAction = child->action;
         }
     }
-    // root->PrintTree(-1, "", true);
+    // root->PrintTree(root->action);
     deleteTree(root);
     return nxtAction;
 }
@@ -34,12 +58,12 @@ void MCTS::search(Node* root) {
     Node* node = root;
     Game* scratch_game = board->clone();
     vector<Node*> path{root};
-    
-    int action = -1;
+
     while (node->expanded()) {
-        node = select(node, action);
-        scratch_game->move(action);
-        path.push_back(node);
+        auto [nxtNode, nxtAction] = select(node);
+        scratch_game->move(nxtAction);
+        path.push_back(nxtNode);
+        node = nxtNode;
     }
     double value;
     int score = scratch_game->score();
@@ -51,12 +75,14 @@ void MCTS::search(Node* root) {
         value = playout(scratch_game);
     }
     backpropagate(path, value);
+
+    delete scratch_game;
     return;
 }
 
-Node* MCTS::select(Node* node, int& action) {
-    Node* bestNode;
-    int bestAction;
+pair<Node*, int> MCTS::select(Node* node) {
+    Node* bestNode = node->children[0];
+    int bestAction = node->children[0]->action;
     double bestScore = -1;
     //node->PrintTree(node->action, "", true);
     for (auto& child : node->children) {
@@ -67,8 +93,7 @@ Node* MCTS::select(Node* node, int& action) {
             bestAction = child->action;
         }
     }
-    action = bestAction;
-    return bestNode;
+    return {bestNode, bestAction};
 }
 
 void MCTS::expand(Node* node, Game* _board) {
@@ -108,13 +133,14 @@ double MCTS::playout(Game* _board) {
     for (int i = 0; i < playoutCount; ++i) {
         Game* scratch_game = _board->clone();
         value += onePlayout(scratch_game);
+        delete scratch_game;
     }
     return value / playoutCount;
 }
 
 inline void MCTS::backpropagate(vector<Node*> path, double value) {
     reverse(path.begin(), path.end());
-    for (auto node : path) {
+    for (auto& node : path) {
         node->reward += value;
         node->n += 1;
         value *= -1;
@@ -127,11 +153,9 @@ void MCTS::deleteTree(Node* root) {
         return;
     }
 
-    // 釋放所有子節點的記憶體
-    for (auto child : root->children) {
+    for (auto& child : root->children) {
         deleteTree(child);
     }
     
-    // 釋放根節點的記憶體
     delete root;
 }

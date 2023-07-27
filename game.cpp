@@ -1,4 +1,5 @@
 #include "game.h"
+#include <numeric>
 /*
 0  1  2  3  4  5  6
 7  8  9  10 11 12 13
@@ -18,10 +19,6 @@ Game::Game(vector<int> _board, int _turn) {
 }  
 
 void Game::move(int action) {
-    if (action < 0 || action > 6) {
-        cout << "Action is unvalid." << endl;
-        // exit(0);
-    }
     for (int i = WIDTH * (HEIGHT - 1) + action; i >= action; i -= WIDTH) {
         if (board[i] == 0) {
             board[i] = turn;
@@ -115,6 +112,9 @@ int Game::score() { // draw(0) win(10) others(-1)
 } 
 
 vector<int> Game::getValidAction() {
+    if (reduce(board.begin(), board.end(), 0) == 0) {
+        return {3};
+    }
     vector<int> validActions;
     // vector<int> moveOrdering{3, 2, 4, 1, 5, 0, 6};
     // for (auto& i : moveOrdering) {

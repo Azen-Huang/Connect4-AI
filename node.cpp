@@ -41,7 +41,9 @@ void Node::PrintTree(int pos, string pre_output, bool isLast){
     int it = 0;
     int cnt = node->children.size();
     for(auto child: node->children){
-        child->PrintTree(child->action, pre_output+"   ", it == (cnt - 1));
-        it++;
+        if (child->n > 0) {
+            child->PrintTree(child->action, pre_output+"   ", it == (cnt - 1));
+            it++;
+        }
     }
 }
