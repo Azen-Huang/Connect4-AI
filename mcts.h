@@ -1,27 +1,29 @@
 #include "node.h"
 #include "game.h"
 #include <cmath>
+#include <unordered_map>
 #include <random>
+
 #ifndef MCTS_H 
 #define MCTS_H 
 class MCTS{
 public:
-    MCTS(Game* _board, int _simulationCount, int _playoutCount);
+    MCTS(Game* _game, int _simulationCount, int _playoutCount);
     int getNxtAction();
 private:
-    void search(Node* root);
-    // Node* select(Node* node, int& action);
-    pair<Node*, int> select(Node* node);
-    void expand(Node* node, Game* _board);
-    double playout(Game* _board);
-    void backpropagate(vector<Node*> path, double value);
-    const double onePlayout(Game* _board);
-    void deleteTree(Node* node);
+    void search(Node* root, mt19937& gen);
 
-    Game* board;
+    pair<Node*, int> select(Node* node) const;
+    void expand(Node* node, Game* _game) const;
+    double playout(Game* _game, mt19937& gen);
+    void backpropagate(vector<Node*> path, double value) const;
+    
+    void deleteTree(Node* node) const;
+
+    Game* game;
     double playoutCount;
     double simulationCount;
-    double c = sqrt(2);
-    double EPS = 1e-8;
+    static constexpr double c = 1.414; //sqrt(2)
+    unordered_map<string, double> table;
 };
 #endif

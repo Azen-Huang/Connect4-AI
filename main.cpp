@@ -3,8 +3,9 @@
 #include "node.h"
 #include "mcts.h"
 using namespace std;
-const int EVALUATION_COUNT = 5000;
-const int PLAYOUT_COUNT = 10;
+const int EVALUATION_COUNT = 50000;
+const int PLAYOUT_COUNT = 1000;
+
 int input(char c) {
     return toupper(c) - 'A';
 }
@@ -12,6 +13,7 @@ int input(char c) {
 void AI_vs_AI() {
     Game* board = new Game();
     int score;
+    board->move(3);
     board->print();
     while (true) {
         MCTS mcts = MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
@@ -41,13 +43,16 @@ void Human_vs_AI() {
     int action;
     int score;
     board->print();
+    cout << "Who first? (1. AI, 2. Human)" << endl;
+    getline(cin, strAction);
+    if (strAction == "1") {
+        board->move(3);
+        board->print();
+    }
 
-    MCTS mcts = MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
-    // action = mcts.getNxtAction();
-    board->move(3);
-    board->print();
-
-    while (getline(cin, strAction)) {
+    while (true) {
+        cout << "Input your action: ";
+        getline(cin, strAction);
         action = input(strAction[0]);
         board->move(action);
         board->print();
@@ -94,9 +99,29 @@ void Human_vs_Human() {
 }
 
 int main() {
-    // Human_vs_Human();
-    // Human_vs_AI();
-    AI_vs_AI();
-
+    string command;
+    bool firstPlayerturn = true;
+    cout << "1. Human vs. Human" << endl;
+    cout << "2. Human vs. AI" << endl;
+    cout << "3. AI vs AI" << endl;
+    cout << "Input Command: ";
+    while (getline(cin, command)) {
+        if (command == "1") {
+            cout << "Start Human vs. Human" << endl;
+            Human_vs_Human();
+        }
+        else if (command == "2") {
+            cout << "Start Human vs. AI" << endl;
+            Human_vs_AI();
+        }
+        else if (command == "3") {
+            cout << "Start AI vs. AI" << endl;
+            AI_vs_AI();
+        }
+        else {
+            exit(0);
+        }
+        
+    }
     return 0;
 }

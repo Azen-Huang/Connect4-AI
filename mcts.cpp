@@ -1,15 +1,10 @@
 #include "mcts.h"
-#include <chrono>
+
 #define TIME 
+#define TABLE
 
-
-
-MCTS::MCTS(Game* _board, int _simulationCount, int _playoutCount) {
-    board = _board;
-    simulationCount = _simulationCount;
-    playoutCount = _playoutCount;
-}
-
+#ifdef TIME
+#include <chrono>
 void showProgressBar(int progress, int total, int barWidth = 70) {
     float progressRatio = static_cast<float>(progress) / total;
     int barLength = static_cast<int>(barWidth * progressRatio);
@@ -22,17 +17,23 @@ void showProgressBar(int progress, int total, int barWidth = 70) {
     std::cout << "] " << static_cast<int>(progressRatio * 100.0) << "%";
     std::cout.flush();
 }
+#endif
+
+MCTS::MCTS(Game* _game, int _simulationCount, int _playoutCount)
+    : game(_game), simulationCount(_simulationCount), playoutCount(_playoutCount) {}
 
 int MCTS::getNxtAction() {
+    random_device rd;
+    mt19937 gen(rd());
+
     Node* root = new Node();
-    expand(root, board);
+    expand(root, game);
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < simulationCount; ++i) {
-        search(root);
+        search(root, gen);
         #ifdef TIME 
         if ((i + 1) % int(simulationCount / 100) == 0 || i == simulationCount - 1) {
             showProgressBar(i + 1, simulationCount);
-            // 計算執行時間並顯示在進度條的右邊
             auto currentTime = std::chrono::high_resolution_clock::now();
             double duration = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
             std::cout << "  time:" << duration << " s";
@@ -43,7 +44,7 @@ int MCTS::getNxtAction() {
     cout << endl;
     int nxtAction = -1;
     int maxN = -1;
-    for (auto& child : root->children) {
+    for (const auto& child : root->children) {
         if (child->n > maxN) {
             maxN = child->n;
             nxtAction = child->action;
@@ -54,15 +55,15 @@ int MCTS::getNxtAction() {
     return nxtAction;
 }
 
-void MCTS::search(Node* root) {
+inline void MCTS::search(Node* root, mt19937& gen) {
     Node* node = root;
-    Game* scratch_game = board->clone();
+    Game* scratch_game = game->clone();
     vector<Node*> path{root};
 
     while (node->expanded()) {
         auto [nxtNode, nxtAction] = select(node);
         scratch_game->move(nxtAction);
-        path.push_back(nxtNode);
+        path.emplace_back(nxtNode);
         node = nxtNode;
     }
     double value;
@@ -72,7 +73,7 @@ void MCTS::search(Node* root) {
     }
     else {
         expand(node, scratch_game);
-        value = playout(scratch_game);
+        value = playout(scratch_game, gen);
     }
     backpropagate(path, value);
 
@@ -80,67 +81,79 @@ void MCTS::search(Node* root) {
     return;
 }
 
-pair<Node*, int> MCTS::select(Node* node) {
-    Node* bestNode = node->children[0];
-    int bestAction = node->children[0]->action;
+inline pair<Node*, int> MCTS::select(Node* node) const{
+    Node* bestNode;
+    int bestAction;
     double bestScore = -1;
-    //node->PrintTree(node->action, "", true);
-    for (auto& child : node->children) {
+    for (const auto& child : node->children) {
         double uct_score = child->n == 0 ? 10000 : child->reward / (child->n) + c * sqrt(log(node->n) / (child->n));
         if (uct_score > bestScore) {
             bestScore = uct_score;
-            bestNode = child;
+            bestNode = move(child);
             bestAction = child->action;
         }
     }
     return {bestNode, bestAction};
 }
 
-void MCTS::expand(Node* node, Game* _board) {
-    vector<int> ValidAction = _board->getValidAction();
-    for (auto& action : ValidAction) {
+inline void MCTS::expand(Node* node, Game* _game) const{
+    vector<int> ValidAction = _game->getValidAction();
+    for (const auto& action : ValidAction) {
         Node* nxtNode = new Node(action);
-        node->children.push_back(nxtNode);
+        node->children.emplace_back(nxtNode);
     }
     return;
 }
 
-inline const double MCTS:: onePlayout(Game* _board) {
-    int current_player = _board->turn;
-    double score = _board->score();
-    while (score == -1) {
-        vector<int> validAction = _board->getValidAction();
-
-        random_device rd;  // 使用真實的硬體來產生種子
-        mt19937 gen(rd()); // 使用 Mersenne Twister 引擎
-        uniform_int_distribution<> distrib(0, validAction.size() - 1); // 定義範圍
-        int randomIndex = distrib(gen); // 從 0 到 vector 大小減 1 間隨機取一個 index
-        int nxtAction = validAction[randomIndex]; // 取得隨機數字
-
-        _board->move(nxtAction);
-        score = _board->score();
+inline double MCTS::playout(Game* _game, mt19937& gen) {
+    #ifdef TABLE
+    auto VecToStr = [&](){
+        string s = "";
+        for (auto& v : _game->board) s += to_string(v);
+        return s;
+    };
+    string boardInfo = VecToStr();
+    if (table.find(boardInfo) != table.end()) {
+        return table[boardInfo];
     }
+    #endif
 
-    if (score == 0) {
-        return 0;
-    }
-    int win_player = _board->turn == 1 ? 2 : 1;
-    return current_player == win_player ? 1 : -1;
-}
-
-double MCTS::playout(Game* _board) {
     double value = 0;
+    auto onePlayout = [&](Game* game) {
+        int current_player = _game->turn;
+        double score = _game->score();
+        while (score == -1) {
+            vector<int> validAction = _game->getValidAction();
+            uniform_int_distribution<> distrib(0, validAction.size() - 1); // 定義範圍
+            int randomIndex = distrib(gen); // 從 0 到 vector 大小減 1 間隨機取一個 index
+            int nxtAction = validAction[randomIndex]; // 取得隨機數字
+            _game->move(nxtAction);
+            score = _game->score();
+        }
+        if (score == 0) {
+            return 0;
+        }
+        int win_player = _game->turn == 1 ? 2 : 1;
+        return current_player == win_player ? 1 : -1;
+    };
+
     for (int i = 0; i < playoutCount; ++i) {
-        Game* scratch_game = _board->clone();
+        Game* scratch_game = _game->clone();
         value += onePlayout(scratch_game);
         delete scratch_game;
     }
+
+    #ifdef TABLE
+    table[boardInfo] = value / playoutCount;
+    return table[boardInfo];
+    #endif
+
     return value / playoutCount;
 }
 
-inline void MCTS::backpropagate(vector<Node*> path, double value) {
+inline void MCTS::backpropagate(vector<Node*> path, double value) const{
     reverse(path.begin(), path.end());
-    for (auto& node : path) {
+    for (Node*& node : path) {
         node->reward += value;
         node->n += 1;
         value *= -1;
@@ -148,7 +161,7 @@ inline void MCTS::backpropagate(vector<Node*> path, double value) {
     return;
 }
 
-void MCTS::deleteTree(Node* root) {
+inline void MCTS::deleteTree(Node* root) const{
     if (root == nullptr) {
         return;
     }
@@ -159,3 +172,5 @@ void MCTS::deleteTree(Node* root) {
     
     delete root;
 }
+
+

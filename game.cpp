@@ -8,15 +8,12 @@
 28 29 30 31 32 33 34
 35 36 37 38 39 40 41
 */
-Game::Game() {
-    board.resize(WIDTH * HEIGHT, 0);
-    turn = 1;
-}
 
-Game::Game(vector<int> _board, int _turn) {
-    board = _board;
-    turn = _turn;
-}  
+Game::Game()
+    : board(WIDTH * HEIGHT, 0), turn(1) {}
+
+Game::Game(vector<int> _board, int _turn)
+    : board(_board), turn(_turn) {}
 
 void Game::move(int action) {
     for (int i = WIDTH * (HEIGHT - 1) + action; i >= action; i -= WIDTH) {
@@ -40,7 +37,7 @@ void Game::undo(int action) {
     return;
 }
 
-int Game::score() { // draw(0) win(10) others(-1)
+const int Game::score() { // draw(0) win(10) others(-1)
     // 檢查水平方向是否有四個連續的棋子
     int current_turn = turn == 1 ? 2 : 1;
     for (int row = 0; row < HEIGHT; ++row) {
@@ -111,13 +108,10 @@ int Game::score() { // draw(0) win(10) others(-1)
     return 0; //平局
 } 
 
-vector<int> Game::getValidAction() {
-    if (reduce(board.begin(), board.end(), 0) == 0) {
-        return {3};
-    }
+const vector<int> Game::getValidAction() {
     vector<int> validActions;
     // vector<int> moveOrdering{3, 2, 4, 1, 5, 0, 6};
-    // for (auto& i : moveOrdering) {
+    // for (const auto& i : moveOrdering) {
     for (int i = 0; i < WIDTH; ++i) {
         if (board[i] == 0) {
             validActions.push_back(i);

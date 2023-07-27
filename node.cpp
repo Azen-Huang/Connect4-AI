@@ -20,7 +20,7 @@ bool Node::expanded() {
 
 void Node::PrintTree(int pos, string pre_output, bool isLast){
     auto node = this;
-    // Condition when node is None
+    
     if (node == NULL)
         return;
     

@@ -10,13 +10,15 @@ class Game {
 public:
     vector<int> board;
     int turn;
-
+    
     Game();
     Game(vector<int> _board, int _turn);
+
     void move(int action);
     void undo(int action);
-    int score(); // draw(0) win(10) others(-1)
-    vector<int> getValidAction();
+    const int score(); // draw(0) win(10) not end(-1)
+    const vector<int> getValidAction(); // [0, 1, 2, 3, 4, 5, 6]
+
     Game* clone();
 
     void print();
