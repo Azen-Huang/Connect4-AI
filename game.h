@@ -16,11 +16,11 @@ public:
 
     void move(int action);
     void undo(int action);
-    const int score(); // draw(0) win(10) not end(-1)
-    const vector<int> getValidAction(); // [0, 1, 2, 3, 4, 5, 6]
+    int score() const; // draw(0) win(10) not end(-1)
+    vector<int> getValidAction() const; // [0, 1, 2, 3, 4, 5, 6]
 
-    Game* clone();
+    Game* clone() const;
 
-    void print();
+    void print() const;
 };
 #endif

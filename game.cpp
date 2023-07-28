@@ -37,7 +37,7 @@ void Game::undo(int action) {
     return;
 }
 
-const int Game::score() { // draw(0) win(10) not end(-1)
+int Game::score() const { // draw(0) win(10) not end(-1)
     // 檢查水平方向是否有四個連續的棋子
     int current_turn = turn == 1 ? 2 : 1;
     for (int row = 0; row < HEIGHT; ++row) {
@@ -108,7 +108,7 @@ const int Game::score() { // draw(0) win(10) not end(-1)
     return 0; //平局
 } 
 
-const vector<int> Game::getValidAction() {
+vector<int> Game::getValidAction() const {
     vector<int> validActions;
     // vector<int> moveOrdering{3, 2, 4, 1, 5, 0, 6};
     // for (const auto& i : moveOrdering) {
@@ -120,11 +120,11 @@ const vector<int> Game::getValidAction() {
     return validActions;
 }
 
-Game* Game::clone(){
+Game* Game::clone() const {
     return new Game(board, turn);
 }
 
-void Game::print() {
+void Game::print() const {
     for (char c = 'A'; c < 'A' + WIDTH; ++c) {
         cout << "  " << c << " ";
     }
