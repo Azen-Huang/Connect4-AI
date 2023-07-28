@@ -120,6 +120,11 @@ vector<int> Game::getValidAction() const {
     return validActions;
 }
 
+string Game::key() const {
+    string s = "";
+    for (auto& v : board) s += to_string(v);
+    return s;
+}
 Game* Game::clone() const {
     return new Game(board, turn);
 }
