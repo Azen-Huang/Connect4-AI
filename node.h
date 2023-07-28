@@ -1,4 +1,8 @@
-#include "game.h"
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
 #ifndef NODE_H 
 #define NODE_H 
 class Node {
