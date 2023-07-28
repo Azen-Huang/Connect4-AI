@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <numeric>
 using namespace std;
 #define WIDTH 7
 #define HEIGHT 6
