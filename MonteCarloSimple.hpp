@@ -55,7 +55,7 @@ void MonteCarloSimple(const int iterations) {
 
     // 估計 π 值
     // 圓型區域和正方形區域的面積比：π * R^2 / (4 * R^2) = π / 4。
-    double estimated_pi = 4.0 * (circle_points) / double(iterations);
+    double estimated_pi = 4.0 * ((circle_points) / double(iterations));
 
     cout << "π : " << estimated_pi << endl;
 
