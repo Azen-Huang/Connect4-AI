@@ -2,6 +2,7 @@
 #include "game.h"
 #include "node.h"
 #include "mcts.h"
+#include "MonteCarloSimple.hpp"
 using namespace std;
 const int EVALUATION_COUNT = 50000;
 const int PLAYOUT_COUNT = 1000;
@@ -99,6 +100,8 @@ void Human_vs_Human() {
 }
 
 int main() {
+    MonteCarloSimple(1000000);
+    return 0;
     string command;
     bool firstPlayerturn = true;
     cout << "1. Human vs. Human" << endl;
