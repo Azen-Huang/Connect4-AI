@@ -125,6 +125,7 @@ string Game::key() const {
     for (auto& v : board) s += to_string(v);
     return s;
 }
+
 Game* Game::clone() const {
     return new Game(board, turn);
 }

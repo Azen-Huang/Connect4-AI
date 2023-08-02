@@ -107,33 +107,29 @@ inline void MCTS::expand(Node* node, Game* _game) const{
 
 inline double MCTS::playout(Game* _game, mt19937& gen) {
     #ifdef TABLE
-    auto VecToStr = [&](){
-        string s = "";
-        for (auto& v : _game->board) s += to_string(v);
-        return s;
-    };
-    string boardInfo = VecToStr();
-    if (table.find(boardInfo) != table.end()) {
-        return table[boardInfo];
+    string key = _game->key();
+    if (table.count(key)) {
+        return table[key];
     }
     #endif
 
     double value = 0;
     auto onePlayout = [&](Game* game) {
-        int current_player = _game->turn;
-        double score = _game->score();
+        int current_player = game->turn;
+        double score = game->score();
         while (score == -1) {
-            vector<int> validAction = _game->getValidAction();
+            vector<int> validAction = game->getValidAction();
             uniform_int_distribution<> distrib(0, validAction.size() - 1); // 定義範圍
             int randomIndex = distrib(gen); // 從 0 到 vector 大小減 1 間隨機取一個 index
             int nxtAction = validAction[randomIndex]; // 取得隨機數字
-            _game->move(nxtAction);
-            score = _game->score();
+            game->move(nxtAction);
+            score = game->score();
         }
+
         if (score == 0) {
             return 0;
         }
-        int win_player = _game->turn == 1 ? 2 : 1;
+        int win_player = game->turn == 1 ? 2 : 1;
         return current_player == win_player ? 1 : -1;
     };
 
@@ -144,8 +140,8 @@ inline double MCTS::playout(Game* _game, mt19937& gen) {
     }
 
     #ifdef TABLE
-    table[boardInfo] = value / playoutCount;
-    return table[boardInfo];
+    table[key] = value / playoutCount;
+    return table[key];
     #endif
 
     return value / playoutCount;

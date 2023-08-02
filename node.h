@@ -15,7 +15,7 @@ public:
 
     Node();
     Node(int action);
-    bool expanded();
+    bool expanded() const;
     void PrintTree(int pos = -1, string pre_output = "", bool isLast = true);
 };
 #endif

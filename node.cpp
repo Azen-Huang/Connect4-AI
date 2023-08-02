@@ -1,20 +1,12 @@
 #include "node.h"
 
-Node::Node() {
-    action = -1;
-    reward = 0.0;
-    n = 0.0;
-    //children = {};
-}
+Node::Node()
+    : action(-1), reward(0.0), n(0.0) {}
 
-Node::Node(int _action) {
-    action = _action;
-    reward = 0.0;
-    n = 0.0;
-    //children = {};
-}
+Node::Node(int _action) 
+    : action(_action), reward(0.0), n(0.0) {}
 
-bool Node::expanded() {
+bool Node::expanded() const {
     return children.size() > 0;
 }
 
