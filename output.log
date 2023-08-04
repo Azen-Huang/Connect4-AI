@@ -1,14 +1,0 @@
-1. Human vs. Human
-2. Human vs. AI
-3. AI vs AI
-Input Command: Start AI vs. AI
-  A   B   C   D   E   F   G 
------------------------------
-| - | - | - | - | - | - | - |
-| - | - | - | - | - | - | - |
-| - | - | - | - | - | - | - |
-| - | - | - | - | - | - | - |
-| - | - | - | - | - | - | - |
-| - | - | - | O | - | - | - |
------------------------------
- Monte-Carlo Tree Search Bar: [                                                                      ] 0%  time:0 s Monte-Carlo Tree Search Bar: [=                                                                     ] 1%  time:1 s Monte-Carlo Tree Search Bar: [==                                                                    ] 2%  time:1 s Monte-Carlo Tree Search Bar: [==                                                                    ] 3%  time:2 s Monte-Carlo Tree Search Bar: [===                                                                   ] 5%  time:2 s Monte-Carlo Tree Search Bar: [====                                                                  ] 5%  time:3 s Monte-Carlo Tree Search Bar: [====                                                                  ] 7%  time:3 s Monte-Carlo Tree Search Bar: [=====                                                                 ] 7%  time:4 s Monte-Carlo Tree Search Bar: [======                                                                ] 9%  time:4 s Monte-Carlo Tree Search Bar: [=======                                                               ] 10%  time:5 s Monte-Carlo Tree Search Bar: [=======                                                               ] 10%  time:5 s Monte-Carlo Tree Search Bar: [========                                                              ] 11%  time:6 s Monte-Carlo Tree Search Bar: [=========                                                             ] 12%  time:6 s
