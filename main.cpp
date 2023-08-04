@@ -1,30 +1,54 @@
 #include <iostream>
-#include "game.h"
+#include "gameStrategy.h"
+#include "board.h"
+#include "bitboard.h"
 #include "node.h"
+<<<<<<< HEAD
+#include "mcts.hpp"
+using namespace std;
+//#define BITBOARD
+#define BOARD
+const int EVALUATION_COUNT = 10000;
+const int PLAYOUT_COUNT = 200;
+=======
 #include "mcts.h"
 #include "MonteCarloSimple.hpp"
 using namespace std;
 const int EVALUATION_COUNT = 10000;
 const int PLAYOUT_COUNT = 100;
+>>>>>>> 3f2ee43effbe57219e2950e28057929d9ba81a1d
 
 int input(char c) {
     return toupper(c) - 'A';
 }
 
 void AI_vs_AI() {
-    Game* board = new Game();
+    #ifdef BITBOARD
+    GameStrategy<bitboard>* board = new BitBoard();
+    #endif
+    #ifdef BOARD
+    GameStrategy<vector<int>>* board = new Board();
+    #endif
+
     int score;
     board->move(3);
     board->print();
     while (true) {
-        MCTS mcts = MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
-        int action = mcts.getNxtAction();
+        #ifdef BITBOARD
+        MCTS<bitboard>* mcts = new MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
+        #endif
+        #ifdef BOARD
+        MCTS<vector<int>>* mcts = new MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
+        #endif
+
+        int action = mcts->getNxtAction();
         board->move(action);
         board->print();
-        score = board->score();
+        score = board->score(action);
         if (score != -1) {
             break;
         }
+        delete mcts;
     }
 
     char winner = board->turn == 1 ? 'X' : 'O';
@@ -34,12 +58,19 @@ void AI_vs_AI() {
     else {
         cout << "Winner is " << winner << "." << endl;
     }
-    return;
 
+    delete board;
+    return;
 }
 
 void Human_vs_AI() {
-    Game* board = new Game();
+    #ifdef BITBOARD
+    GameStrategy<bitboard>* board = new BitBoard();
+    #endif
+    #ifdef BOARD
+    GameStrategy<vector<int>>* board = new Board();
+    #endif
+
     string strAction;
     int action;
     int score;
@@ -57,31 +88,50 @@ void Human_vs_AI() {
         action = input(strAction[0]);
         board->move(action);
         board->print();
-        score = board->score();
+        score = board->score(action);
         if (score != -1) {
             string win_turn = board->turn == 1 ? "X" : "O";
             cout << win_turn << " Win." << endl;
             break;
         }
 
-        MCTS mcts = MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
-        action = mcts.getNxtAction();
+        #ifdef BITBOARD
+        MCTS<bitboard>* mcts = new MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
+        #endif
+        #ifdef BOARD
+        MCTS<vector<int>>* mcts = new MCTS(board, EVALUATION_COUNT, PLAYOUT_COUNT);
+        #endif
+
+        int action = mcts->getNxtAction();
         board->move(action);
         board->print();
-        score = board->score();
+        score = board->score(action);
         if (score != -1) {
             string win_turn = board->turn == 1 ? "X" : "O";
             cout << win_turn << " Win." << endl;
             break;
         }
     }
+    delete board;
 }
+
 void Human_vs_Human() {
-    Game* board = new Game();
+    #ifdef BITBOARD
+    GameStrategy<bitboard>* board = new BitBoard();
+    #endif
+    #ifdef BOARD
+    GameStrategy<vector<int>>* board = new Board();
+    #endif
+
     string strAction;
     board->print();
+    int action = -1;
     while (getline(cin, strAction)) {
-        int action = input(strAction[0]);
+        if (strAction == "u") {
+            board->undo(action);
+            continue;
+        }
+        action = input(strAction[0]);
         board->move(action);
         board->print();
         vector<int> validAction = board->getValidAction();
@@ -90,18 +140,62 @@ void Human_vs_Human() {
             cout << action << ", ";
         }
         cout << "]" << endl;
-        int score = board->score();
+        int score = board->score(action);
         if (score != -1) {
             string win_turn = board->turn == 1 ? "X" : "O";
             cout << win_turn << " Win." << endl;
             break;
         }
     }
+    delete board;
+}
+
+void DEBUG() {
+    #ifdef BITBOARD
+    GameStrategy<bitboard>* board = new BitBoard();
+    #endif
+    #ifdef BOARD
+    GameStrategy<vector<int>>* board = new Board();
+    #endif
+    
+    vector<string> DEBUG_COMMAND{"d", "d", "u", "u"};
+
+    // string strAction;
+    board->print();
+    int action = -1;
+    for (auto& strAction : DEBUG_COMMAND) {
+    // while (getline(cin, strAction)) {
+        if (strAction == "u") {
+            board->undo(action);
+            board->print();
+            continue;
+        }
+        action = input(strAction[0]);
+        board->move(action);
+        board->print();
+        vector<int> validAction = board->getValidAction();
+        cout << "[";
+        for (auto& action : validAction) {
+            cout << action << ", ";
+        }
+        cout << "]" << endl;
+        int score = board->score(action);
+        if (score != -1) {
+            string win_turn = board->turn == 1 ? "X" : "O";
+            cout << win_turn << " Win." << endl;
+            break;
+        }
+    }
+    delete board;
 }
 
 int main() {
+<<<<<<< HEAD
+    // DEBUG();
+=======
     MonteCarloSimple(1000000);
     // return 0;
+>>>>>>> 3f2ee43effbe57219e2950e28057929d9ba81a1d
     string command;
     bool firstPlayerturn = true;
     cout << "1. Human vs. Human" << endl;
