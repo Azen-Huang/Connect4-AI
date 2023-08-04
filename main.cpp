@@ -3,20 +3,12 @@
 #include "board.h"
 #include "bitboard.h"
 #include "node.h"
-<<<<<<< HEAD
 #include "mcts.hpp"
 using namespace std;
 //#define BITBOARD
 #define BOARD
 const int EVALUATION_COUNT = 10000;
 const int PLAYOUT_COUNT = 200;
-=======
-#include "mcts.h"
-#include "MonteCarloSimple.hpp"
-using namespace std;
-const int EVALUATION_COUNT = 10000;
-const int PLAYOUT_COUNT = 100;
->>>>>>> 3f2ee43effbe57219e2950e28057929d9ba81a1d
 
 int input(char c) {
     return toupper(c) - 'A';
@@ -190,12 +182,7 @@ void DEBUG() {
 }
 
 int main() {
-<<<<<<< HEAD
     // DEBUG();
-=======
-    MonteCarloSimple(1000000);
-    // return 0;
->>>>>>> 3f2ee43effbe57219e2950e28057929d9ba81a1d
     string command;
     bool firstPlayerturn = true;
     cout << "1. Human vs. Human" << endl;

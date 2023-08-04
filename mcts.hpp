@@ -157,36 +157,24 @@ inline double MCTS<BoardType>::playout(GameStrategy<BoardType>* _game, mt19937& 
     string key = _game->key();
     if (table.count(key)) {
         return table[key];
->>>>>>> 3f2ee43effbe57219e2950e28057929d9ba81a1d:mcts.cpp
     }
     #endif
 
     double value = 0;
-<<<<<<< HEAD:mcts.hpp
     auto onePlayout = [&](GameStrategy<BoardType>* game) {
         int current_player = game->turn;
         double score;
         while (true) {
-=======
-    auto onePlayout = [&](Game* game) {
-        int current_player = game->turn;
-        double score = game->score();
-        while (score == -1) {
->>>>>>> 3f2ee43effbe57219e2950e28057929d9ba81a1d:mcts.cpp
             vector<int> validAction = game->getValidAction();
             uniform_int_distribution<> distrib(0, validAction.size() - 1); // 定義範圍
             int randomIndex = distrib(gen); // 從 0 到 vector 大小減 1 間隨機取一個 index
             int nxtAction = validAction[randomIndex]; // 取得隨機數字
             game->move(nxtAction);
-<<<<<<< HEAD:mcts.hpp
             score = game->score(nxtAction);
 
             if (score != -1) {
                 break;
             }
-=======
-            score = game->score();
->>>>>>> 3f2ee43effbe57219e2950e28057929d9ba81a1d:mcts.cpp
         }
 
         if (score == 0) {
