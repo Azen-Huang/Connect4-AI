@@ -149,13 +149,8 @@ inline void MCTS<BoardType>::expand(Node* node, GameStrategy<BoardType>* _game) 
 template <typename BoardType>
 inline double MCTS<BoardType>::playout(GameStrategy<BoardType>* _game, mt19937& gen) {
     #ifdef TABLE
-<<<<<<< HEAD:mcts.hpp
-    string boardInfo = _game->getKey();
-    if (table.find(boardInfo) != table.end()) {
-        return table[boardInfo];
-=======
-    string key = _game->key();
-    if (table.count(key)) {
+    string key = _game->getKey();
+    if (table.find(key) != table.end()) {
         return table[key];
     }
     #endif

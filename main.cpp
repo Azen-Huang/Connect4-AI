@@ -5,8 +5,8 @@
 #include "node.h"
 #include "mcts.hpp"
 using namespace std;
-//#define BITBOARD
-#define BOARD
+#define BITBOARD
+// #define BOARD
 const int EVALUATION_COUNT = 10000;
 const int PLAYOUT_COUNT = 200;
 
