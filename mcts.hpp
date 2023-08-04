@@ -32,7 +32,7 @@ private:
 #endif
 
 #define TIME 
-#define TABLE
+// #define TABLE
 
 #ifdef TIME
 void showProgressBar(int progress, int total, int barWidth = 70) {
